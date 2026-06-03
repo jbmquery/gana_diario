@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "705778651421",
+    "project_id": "ganadiariojbm",
+    "storage_bucket": "ganadiariojbm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705778651421:android:79e1b93684e3cc49bd91f4",
+        "android_client_info": {
+          "package_name": "com.example.gana_diario_jbm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "705778651421-okh551nn2na6nnsqq5vpfcu8j3ulgtj5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCf4PMhPeWf31XE8_tYIZMHGwpOP0CT_yI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705778651421-okh551nn2na6nnsqq5vpfcu8j3ulgtj5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "705778651421-jcrrpdkpfavf9eq6f1ltqnbnpvmtsolb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ganaDiarioJbm"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
