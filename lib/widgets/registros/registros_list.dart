@@ -1,3 +1,4 @@
+//lib/widgets/registros/registros_list.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

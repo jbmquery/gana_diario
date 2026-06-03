@@ -1,3 +1,4 @@
+//lib/services/registros_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/registro_model.dart';
@@ -11,6 +12,36 @@ class RegistrosService {
   static Stream<List<RegistroModel>> streamRegistros() {
     return collection
         .orderBy('fecha', descending: true)
+        .limit(20)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => RegistroModel.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
+  static Stream<List<RegistroModel>> streamRegistrosPorFecha(DateTime fecha) {
+    final inicio = DateTime(fecha.year, fecha.month, fecha.day);
+
+    final fin = inicio.add(const Duration(days: 1));
+
+    return collection
+        .where('fecha', isGreaterThanOrEqualTo: Timestamp.fromDate(inicio))
+        .where('fecha', isLessThan: Timestamp.fromDate(fin))
+        .orderBy('fecha', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => RegistroModel.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
+  static Stream<List<RegistroModel>> streamRegistroPorSorte(int sorte) {
+    return collection
+        .where('sorte', isEqualTo: sorte)
+        .limit(1)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
