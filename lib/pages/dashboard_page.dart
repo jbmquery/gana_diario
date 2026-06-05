@@ -14,6 +14,9 @@ import '../widgets/dashboard/atrasadas_card.dart';
 import '../widgets/dashboard/pares_card.dart';
 import '../widgets/dashboard/trios_card.dart';
 import '../widgets/dashboard/apuestas_card.dart';
+import '../widgets/dashboard/frecuencia_50_card.dart';
+import '../widgets/dashboard/frecuencia_100_card.dart';
+import '../widgets/dashboard/frecuencia_500_card.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -46,6 +49,23 @@ class DashboardPage extends StatelessWidget {
               children: [
                 // RESUMEN
                 StatsCards(data: data),
+
+                const SizedBox(height: 10),
+
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: Frecuencia50Card(data: data)),
+
+                    const SizedBox(width: 5),
+
+                    Expanded(child: Frecuencia100Card(data: data)),
+
+                    const SizedBox(width: 5),
+
+                    Expanded(child: Frecuencia500Card(data: data)),
+                  ],
+                ),
 
                 const SizedBox(height: 10),
 
