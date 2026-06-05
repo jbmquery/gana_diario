@@ -8,6 +8,7 @@ class RegistrosToolbar extends StatelessWidget {
   final VoidCallback onImportarExcel;
   final VoidCallback onDescargarPlantilla;
   final VoidCallback onSeleccionarFecha;
+  final ValueChanged<String> onBuscar;
 
   final DateTime? fechaFiltro;
 
@@ -18,6 +19,7 @@ class RegistrosToolbar extends StatelessWidget {
     required this.onImportarExcel,
     required this.onDescargarPlantilla,
     required this.onSeleccionarFecha,
+    required this.onBuscar,
     required this.fechaFiltro,
   });
 
@@ -83,6 +85,7 @@ class RegistrosToolbar extends StatelessWidget {
           width: 120,
           child: TextField(
             controller: sorteController,
+            onChanged: onBuscar,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               hintText: 'Sorte',

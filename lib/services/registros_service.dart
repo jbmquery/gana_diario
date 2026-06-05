@@ -9,45 +9,44 @@ class RegistrosService {
   static CollectionReference<Map<String, dynamic>> get collection =>
       _db.collection('registros');
 
-  static Stream<List<RegistroModel>> streamRegistros() {
-    return collection
+  static Future<List<RegistroModel>> obtenerRegistros() async {
+    final snapshot = await collection
         .orderBy('fecha', descending: true)
         .limit(20)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => RegistroModel.fromFirestore(doc))
-              .toList(),
-        );
+        .get();
+
+    return snapshot.docs
+        .map((doc) => RegistroModel.fromFirestore(doc))
+        .toList();
   }
 
-  static Stream<List<RegistroModel>> streamRegistrosPorFecha(DateTime fecha) {
+  static Future<List<RegistroModel>> obtenerRegistrosPorFecha(
+    DateTime fecha,
+  ) async {
     final inicio = DateTime(fecha.year, fecha.month, fecha.day);
 
     final fin = inicio.add(const Duration(days: 1));
 
-    return collection
+    final snapshot = await collection
         .where('fecha', isGreaterThanOrEqualTo: Timestamp.fromDate(inicio))
         .where('fecha', isLessThan: Timestamp.fromDate(fin))
         .orderBy('fecha', descending: true)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => RegistroModel.fromFirestore(doc))
-              .toList(),
-        );
+        .get();
+
+    return snapshot.docs
+        .map((doc) => RegistroModel.fromFirestore(doc))
+        .toList();
   }
 
-  static Stream<List<RegistroModel>> streamRegistroPorSorte(int sorte) {
-    return collection
+  static Future<List<RegistroModel>> obtenerRegistroPorSorte(int sorte) async {
+    final snapshot = await collection
         .where('sorte', isEqualTo: sorte)
         .limit(1)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => RegistroModel.fromFirestore(doc))
-              .toList(),
-        );
+        .get();
+
+    return snapshot.docs
+        .map((doc) => RegistroModel.fromFirestore(doc))
+        .toList();
   }
 
   static Future<void> crearRegistro(RegistroModel registro) async {

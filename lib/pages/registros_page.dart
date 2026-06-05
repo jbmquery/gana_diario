@@ -48,6 +48,20 @@ class _RegistrosPageState extends State<RegistrosPage> {
     );
   }
 
+  Future<List<RegistroModel>> cargarRegistros() {
+    final texto = sorteController.text.trim();
+
+    if (texto.isNotEmpty) {
+      return RegistrosService.obtenerRegistroPorSorte(int.parse(texto));
+    }
+
+    if (fechaFiltro != null) {
+      return RegistrosService.obtenerRegistrosPorFecha(fechaFiltro!);
+    }
+
+    return RegistrosService.obtenerRegistros();
+  }
+
   Future<void> importarExcel() async {
     try {
       final resultado = await ExcelService.importarArchivo();
@@ -112,6 +126,10 @@ class _RegistrosPageState extends State<RegistrosPage> {
             RegistrosToolbar(
               sorteController: sorteController,
 
+              onBuscar: (_) {
+                setState(() {});
+              },
+
               fechaFiltro: fechaFiltro,
 
               onNuevoRegistro: abrirNuevoRegistro,
@@ -151,19 +169,20 @@ class _RegistrosPageState extends State<RegistrosPage> {
             ),
 
             const SizedBox(height: 10),
-
             Expanded(
-              child: StreamBuilder<List<RegistroModel>>(
-                stream: RegistrosService.streamRegistros(),
+              child: FutureBuilder<List<RegistroModel>>(
+                future: cargarRegistros(),
+
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  final registros = snapshot.data!
-                      .where(coincideFecha)
-                      .where(coincideSorte)
-                      .toList();
+                  if (snapshot.hasError) {
+                    return Center(child: Text(snapshot.error.toString()));
+                  }
+
+                  final registros = snapshot.data ?? [];
 
                   return RegistrosList(
                     registros: registros,
