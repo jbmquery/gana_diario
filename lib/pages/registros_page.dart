@@ -1,3 +1,4 @@
+//lib/pages/registros_page.dart
 import 'package:flutter/material.dart';
 
 import '../models/registro_model.dart';

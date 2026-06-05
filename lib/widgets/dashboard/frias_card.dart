@@ -1,3 +1,4 @@
+//lib/widgets/dashboard/calientes_card.dart
 import 'package:flutter/material.dart';
 
 class FriasCard extends StatelessWidget {
@@ -11,17 +12,54 @@ class FriasCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Top 10 Frías"),
-            const SizedBox(height: 12),
+            const Text(
+              "❄️ Top 10 Frías",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 8),
+
             ...ranking.reversed
                 .take(10)
                 .map(
-                  (e) => ListTile(
-                    leading: CircleAvatar(child: Text(e.numero.toString())),
-                    title: Text("${e.frecuencia} apariciones"),
+                  (e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 28,
+                          height: 28,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: const LinearGradient(
+                              colors: [Color(0xff396AFc), Color(0xff2948ff)],
+                            ),
+                          ),
+                          child: Text(
+                            e.numero.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        Expanded(
+                          child: Text(
+                            "Salió ${e.frecuenciaTotal} veces",
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
           ],

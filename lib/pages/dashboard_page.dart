@@ -1,3 +1,4 @@
+//lib/pages/dashboard_page.dart
 import 'package:flutter/material.dart';
 
 import '../services/dashboard_service.dart';
@@ -7,8 +8,6 @@ import '../widgets/app_navbar.dart';
 import '../widgets/dashboard/stats_cards.dart';
 import '../widgets/dashboard/calientes_card.dart';
 import '../widgets/dashboard/frias_card.dart';
-import '../widgets/dashboard/ranking_card.dart';
-import '../widgets/dashboard/prediccion_card.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -32,21 +31,18 @@ class DashboardPage extends StatelessWidget {
               children: [
                 StatsCards(data: data),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 5),
 
-                CalientesCard(data: data),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: CalientesCard(data: data)),
 
-                const SizedBox(height: 20),
+                    const SizedBox(width: 5),
 
-                FriasCard(data: data),
-
-                const SizedBox(height: 20),
-
-                PrediccionCard(data: data),
-
-                const SizedBox(height: 20),
-
-                RankingCard(data: data),
+                    Expanded(child: FriasCard(data: data)),
+                  ],
+                ),
               ],
             ),
           );
