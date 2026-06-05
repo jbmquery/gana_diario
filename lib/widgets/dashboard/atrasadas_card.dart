@@ -1,4 +1,3 @@
-//lib/widgets/dashboard/atrasadas_card.dart
 import 'package:flutter/material.dart';
 
 class AtrasadasCard extends StatelessWidget {
@@ -16,17 +15,60 @@ class AtrasadasCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("⌛ Más atrasadas"),
-            ...ranking
-                .take(10)
-                .map(
-                  (e) => ListTile(
-                    title: Text("Bolilla ${e.numero}"),
-                    trailing: Text("${e.atraso} sorteos"),
-                  ),
+            const Text(
+              "⌛ Más atrasadas",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 8),
+
+            ...ranking.take(10).toList().asMap().entries.map((entry) {
+              final index = entry.key;
+              final e = entry.value;
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  children: [
+                    _bolilla(e.numero.toString()),
+
+                    const SizedBox(width: 8),
+
+                    const Spacer(),
+
+                    Text(
+                      "${e.atraso} sorteos sin salir",
+                      style: TextStyle(fontSize: 10),
+                    ),
+                  ],
                 ),
+              );
+            }),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _bolilla(String numero) {
+    return Container(
+      width: 28,
+      height: 28,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [Color(0xffFF416C), Color(0xffFF4B2B)],
+        ),
+      ),
+      child: Text(
+        numero,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );

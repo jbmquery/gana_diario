@@ -77,13 +77,17 @@ class DashboardPage extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                // ATRASADAS
-                AtrasadasCard(data: data),
+                // ATRASADAS Y APUESTAS
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: AtrasadasCard(data: data)),
 
-                const SizedBox(height: 10),
+                    const SizedBox(width: 5),
 
-                // APUESTAS
-                ApuestasCard(data: data),
+                    Expanded(child: ApuestasCard(data: data)),
+                  ],
+                ),
               ],
             ),
           );

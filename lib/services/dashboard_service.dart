@@ -149,7 +149,7 @@ class DashboardService {
 
     final apuestas = <List<int>>[];
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10; i++) {
       final copia = [...top15];
 
       copia.shuffle(rnd);

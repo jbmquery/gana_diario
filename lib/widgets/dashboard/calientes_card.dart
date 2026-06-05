@@ -8,7 +8,9 @@ class CalientesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ranking = data["ranking"];
+    final ranking = [...data["ranking"]];
+
+    ranking.sort((a, b) => b.frecuenciaTotal.compareTo(a.frecuenciaTotal));
 
     return Card(
       child: Padding(
