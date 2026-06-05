@@ -18,6 +18,9 @@ import '../widgets/dashboard/frecuencia_50_card.dart';
 import '../widgets/dashboard/frecuencia_100_card.dart';
 import '../widgets/dashboard/frecuencia_500_card.dart';
 
+import '../widgets/dashboard/premium_card.dart';
+import '../widgets/dashboard/ranking_score_card.dart';
+
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
@@ -49,6 +52,10 @@ class DashboardPage extends StatelessWidget {
               children: [
                 // RESUMEN
                 StatsCards(data: data),
+
+                const SizedBox(height: 10),
+
+                PremiumCard(data: data),
 
                 const SizedBox(height: 10),
 
@@ -108,6 +115,10 @@ class DashboardPage extends StatelessWidget {
                     Expanded(child: ApuestasCard(data: data)),
                   ],
                 ),
+
+                const SizedBox(height: 10),
+
+                RankingScoreCard(data: data),
               ],
             ),
           );

@@ -9,7 +9,7 @@ class BolillaStats {
 
   final int atraso;
 
-  double score;
+  final double score;
 
   BolillaStats({
     required this.numero,

@@ -100,10 +100,10 @@ class DashboardService {
       final atraso = ultimoSorteo - ultimoSorteoBolilla[i]!;
 
       final score =
-          freq500[i]! * 0.40 +
-          freq100[i]! * 0.30 +
-          freq50[i]! * 0.20 +
-          atraso * 0.10;
+          (freq500[i]! * 0.40) +
+          (freq100[i]! * 0.25) +
+          (freq50[i]! * 0.15) +
+          (atraso * 0.20);
 
       ranking.add(
         BolillaStats(
@@ -145,12 +145,12 @@ class DashboardService {
   List<List<int>> generarApuestas(List<BolillaStats> ranking) {
     final rnd = Random();
 
-    final top15 = ranking.take(15).map((e) => e.numero).toList();
+    final top12 = ranking.take(12).map((e) => e.numero).toList();
 
     final apuestas = <List<int>>[];
 
     for (int i = 0; i < 10; i++) {
-      final copia = [...top15];
+      final copia = [...top12];
 
       copia.shuffle(rnd);
 
