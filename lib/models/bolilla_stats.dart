@@ -11,6 +11,10 @@ class BolillaStats {
 
   final double score;
 
+  final double scoreRelacional;
+
+  final double probabilidad;
+
   BolillaStats({
     required this.numero,
     required this.frecuenciaTotal,
@@ -19,5 +23,7 @@ class BolillaStats {
     required this.frecuencia500,
     required this.atraso,
     required this.score,
+    required this.scoreRelacional,
+    required this.probabilidad,
   });
 }

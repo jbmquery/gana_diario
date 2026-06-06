@@ -1,4 +1,3 @@
-//lib/services/dashboard_service.dart
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,6 +35,10 @@ class DashboardService {
       freq500[i] = 0;
       ultimoSorteoBolilla[i] = 0;
     }
+
+    //-----------------------------------
+    // RECORRER HISTORIAL
+    //-----------------------------------
 
     for (int index = 0; index < docs.length; index++) {
       final doc = docs[index];
@@ -75,16 +78,17 @@ class DashboardService {
 
       nums.sort();
 
+      // PARES
       for (int i = 0; i < nums.length; i++) {
         for (int j = i + 1; j < nums.length; j++) {
           final clave = '${nums[i]}-${nums[j]}';
-          pares[clave] = (pares[clave] ?? 0) + 1;
 
-          final matrizKey = '${nums[i]}-${nums[j]}';
-          matriz[matrizKey] = (matriz[matrizKey] ?? 0) + 1;
+          pares[clave] = (pares[clave] ?? 0) + 1;
+          matriz[clave] = (matriz[clave] ?? 0) + 1;
         }
       }
 
+      // TRIOS
       for (int i = 0; i < nums.length; i++) {
         for (int j = i + 1; j < nums.length; j++) {
           for (int k = j + 1; k < nums.length; k++) {
@@ -96,45 +100,9 @@ class DashboardService {
       }
     }
 
-    final ultimoSorteo = docs.last['sorte'];
-
-    final ranking = <BolillaStats>[];
-
-    for (int i = 1; i <= 35; i++) {
-      final atraso = ultimoSorteo - ultimoSorteoBolilla[i]!;
-
-      final score =
-          (freq500[i]! * 0.40) +
-          (freq100[i]! * 0.25) +
-          (freq50[i]! * 0.15) +
-          (atraso * 0.20);
-
-      ranking.add(
-        BolillaStats(
-          numero: i,
-          frecuenciaTotal: freqTotal[i]!,
-          frecuencia50: freq50[i]!,
-          frecuencia100: freq100[i]!,
-          frecuencia500: freq500[i]!,
-          atraso: atraso,
-          score: score,
-        ),
-      );
-    }
-
-    ranking.sort((a, b) => b.score.compareTo(a.score));
-
-    final topPares =
-        pares.entries
-            .map((e) => ParStats(clave: e.key, frecuencia: e.value))
-            .toList()
-          ..sort((a, b) => b.frecuencia.compareTo(a.frecuencia));
-
-    final topTrios =
-        trios.entries
-            .map((e) => TrioStats(clave: e.key, frecuencia: e.value))
-            .toList()
-          ..sort((a, b) => b.frecuencia.compareTo(a.frecuencia));
+    //-----------------------------------
+    // COOCURRENCIAS
+    //-----------------------------------
 
     final topCoocurrencias = matriz.entries.map((e) {
       final partes = e.key.split('-');
@@ -146,16 +114,123 @@ class DashboardService {
       );
     }).toList()..sort((a, b) => b.frecuencia.compareTo(a.frecuencia));
 
+    //-----------------------------------
+    // SCORE RELACIONAL
+    //-----------------------------------
+
+    final scoreRelacionalPorBolilla = <int, double>{};
+
+    for (int i = 1; i <= 35; i++) {
+      scoreRelacionalPorBolilla[i] = 0;
+    }
+
+    for (final item in topCoocurrencias.take(100)) {
+      scoreRelacionalPorBolilla[item.bolillaA] =
+          scoreRelacionalPorBolilla[item.bolillaA]! + item.frecuencia;
+
+      scoreRelacionalPorBolilla[item.bolillaB] =
+          scoreRelacionalPorBolilla[item.bolillaB]! + item.frecuencia;
+    }
+
+    //-----------------------------------
+    // RANKING
+    //-----------------------------------
+
+    final ultimoSorteo = docs.last['sorte'];
+
+    final ranking = <BolillaStats>[];
+
+    double totalScoreRelacional = 0;
+
+    for (int i = 1; i <= 35; i++) {
+      final atraso = ultimoSorteo - ultimoSorteoBolilla[i]!;
+
+      final scoreBase =
+          (freq500[i]! * 0.40) +
+          (freq100[i]! * 0.25) +
+          (freq50[i]! * 0.15) +
+          (atraso * 0.20);
+
+      final scoreRelacional =
+          scoreBase + (scoreRelacionalPorBolilla[i]! * 0.05);
+
+      totalScoreRelacional += scoreRelacional;
+
+      ranking.add(
+        BolillaStats(
+          numero: i,
+          frecuenciaTotal: freqTotal[i]!,
+          frecuencia50: freq50[i]!,
+          frecuencia100: freq100[i]!,
+          frecuencia500: freq500[i]!,
+          atraso: atraso,
+          score: scoreBase,
+          scoreRelacional: scoreRelacional,
+          probabilidad: 0,
+        ),
+      );
+    }
+
+    //-----------------------------------
+    // PROBABILIDAD ESTIMADA
+    //-----------------------------------
+
+    final rankingFinal = ranking
+        .map(
+          (e) => BolillaStats(
+            numero: e.numero,
+            frecuenciaTotal: e.frecuenciaTotal,
+            frecuencia50: e.frecuencia50,
+            frecuencia100: e.frecuencia100,
+            frecuencia500: e.frecuencia500,
+            atraso: e.atraso,
+            score: e.score,
+            scoreRelacional: e.scoreRelacional,
+            probabilidad: (e.scoreRelacional / totalScoreRelacional) * 100,
+          ),
+        )
+        .toList();
+
+    rankingFinal.sort((a, b) => b.scoreRelacional.compareTo(a.scoreRelacional));
+
+    //-----------------------------------
+    // PARES
+    //-----------------------------------
+
+    final topPares =
+        pares.entries
+            .map((e) => ParStats(clave: e.key, frecuencia: e.value))
+            .toList()
+          ..sort((a, b) => b.frecuencia.compareTo(a.frecuencia));
+
+    //-----------------------------------
+    // TRIOS
+    //-----------------------------------
+
+    final topTrios =
+        trios.entries
+            .map((e) => TrioStats(clave: e.key, frecuencia: e.value))
+            .toList()
+          ..sort((a, b) => b.frecuencia.compareTo(a.frecuencia));
+
+    //-----------------------------------
+    // RESULTADO
+    //-----------------------------------
+
     return {
       "totalSorteos": total,
       "ultimoSorteo": ultimoSorteo,
-      "ranking": ranking,
+      "ranking": rankingFinal,
       "topPares": topPares.take(20).toList(),
       "topTrios": topTrios.take(20).toList(),
       "topCoocurrencias": topCoocurrencias.take(50).toList(),
-      "apuestas": generarApuestas(ranking),
+      "apuestas": generarApuestas(rankingFinal),
     };
   }
+
+  //-----------------------------------
+  // APUESTAS
+  //-----------------------------------
 
   List<List<int>> generarApuestas(List<BolillaStats> ranking) {
     final rnd = Random();

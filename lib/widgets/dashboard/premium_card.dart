@@ -115,13 +115,16 @@ class PremiumCard extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: posicion < 5
-              ? [const Color(0xffFFD700), const Color(0xffFF8C00)]
+              ? [
+                  const Color.fromARGB(255, 251, 0, 255),
+                  const Color.fromARGB(255, 208, 67, 135),
+                ]
               : [const Color(0xff8E2DE2), const Color(0xff4A00E0)],
         ),
         boxShadow: [
           BoxShadow(
             color: posicion < 5
-                ? Colors.amber.withValues(alpha: 0.5)
+                ? const Color.fromARGB(255, 255, 7, 234).withValues(alpha: 0.5)
                 : Colors.deepPurple.withValues(alpha: 0.4),
             blurRadius: 8,
           ),

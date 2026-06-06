@@ -23,6 +23,8 @@ import '../widgets/dashboard/ranking_score_card.dart';
 
 import '../widgets/dashboard/coocurrencia_card.dart';
 
+import '../widgets/dashboard/top_relacional_card.dart';
+
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
@@ -58,6 +60,10 @@ class DashboardPage extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 PremiumCard(data: data),
+
+                const SizedBox(height: 10),
+
+                TopRelacionalCard(data: data),
 
                 const SizedBox(height: 10),
 
