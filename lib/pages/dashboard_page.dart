@@ -21,6 +21,8 @@ import '../widgets/dashboard/frecuencia_500_card.dart';
 import '../widgets/dashboard/premium_card.dart';
 import '../widgets/dashboard/ranking_score_card.dart';
 
+import '../widgets/dashboard/coocurrencia_card.dart';
+
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
@@ -119,6 +121,10 @@ class DashboardPage extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 RankingScoreCard(data: data),
+
+                const SizedBox(height: 10),
+
+                CoocurrenciaCard(data: data),
               ],
             ),
           );

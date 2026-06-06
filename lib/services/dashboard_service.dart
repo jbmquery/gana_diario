@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/bolilla_stats.dart';
 import '../models/par_stats.dart';
 import '../models/trio_stats.dart';
+import '../models/coocurrencia_stats.dart';
 
 class DashboardService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -26,6 +27,7 @@ class DashboardService {
 
     final pares = <String, int>{};
     final trios = <String, int>{};
+    final matriz = <String, int>{};
 
     for (int i = 1; i <= 35; i++) {
       freqTotal[i] = 0;
@@ -76,8 +78,10 @@ class DashboardService {
       for (int i = 0; i < nums.length; i++) {
         for (int j = i + 1; j < nums.length; j++) {
           final clave = '${nums[i]}-${nums[j]}';
-
           pares[clave] = (pares[clave] ?? 0) + 1;
+
+          final matrizKey = '${nums[i]}-${nums[j]}';
+          matriz[matrizKey] = (matriz[matrizKey] ?? 0) + 1;
         }
       }
 
@@ -132,12 +136,23 @@ class DashboardService {
             .toList()
           ..sort((a, b) => b.frecuencia.compareTo(a.frecuencia));
 
+    final topCoocurrencias = matriz.entries.map((e) {
+      final partes = e.key.split('-');
+
+      return CoocurrenciaStats(
+        bolillaA: int.parse(partes[0]),
+        bolillaB: int.parse(partes[1]),
+        frecuencia: e.value,
+      );
+    }).toList()..sort((a, b) => b.frecuencia.compareTo(a.frecuencia));
+
     return {
       "totalSorteos": total,
       "ultimoSorteo": ultimoSorteo,
       "ranking": ranking,
       "topPares": topPares.take(20).toList(),
       "topTrios": topTrios.take(20).toList(),
+      "topCoocurrencias": topCoocurrencias.take(50).toList(),
       "apuestas": generarApuestas(ranking),
     };
   }
