@@ -1,10 +1,11 @@
 //lib/pages/dashboard_page.dart
-
 import 'package:flutter/material.dart';
 
 import '../services/dashboard_service.dart';
 
 import '../widgets/app_navbar.dart';
+
+import '../widgets/dashboard/selector_fecha.dart';
 
 import '../widgets/dashboard/stats_cards.dart';
 import '../widgets/dashboard/calientes_card.dart';
@@ -49,90 +50,106 @@ class DashboardPage extends StatelessWidget {
 
           final data = snapshot.data!;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // RESUMEN
-                StatsCards(data: data),
+          return Column(
+            children: [
+              // ==========================================
+              // SELECTOR FIJO ARRIBA
+              // ==========================================
+              const SelectorFecha(),
 
-                const SizedBox(height: 10),
+              // ==========================================
+              // CONTENIDO SCROLLEABLE
+              // ==========================================
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // RESUMEN
+                      StatsCards(data: data),
 
-                PremiumCard(data: data),
+                      const SizedBox(height: 10),
 
-                const SizedBox(height: 10),
+                      PremiumCard(data: data),
 
-                TopRelacionalCard(data: data),
+                      const SizedBox(height: 10),
 
-                const SizedBox(height: 10),
+                      TopRelacionalCard(data: data),
 
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: Frecuencia50Card(data: data)),
+                      const SizedBox(height: 10),
 
-                    const SizedBox(width: 5),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: Frecuencia50Card(data: data)),
 
-                    Expanded(child: Frecuencia100Card(data: data)),
+                          const SizedBox(width: 5),
 
-                    const SizedBox(width: 5),
+                          Expanded(child: Frecuencia100Card(data: data)),
 
-                    Expanded(child: Frecuencia500Card(data: data)),
-                  ],
+                          const SizedBox(width: 5),
+
+                          Expanded(child: Frecuencia500Card(data: data)),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // CALIENTES Y FRÍAS
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: CalientesCard(data: data)),
+
+                          const SizedBox(width: 5),
+
+                          Expanded(child: FriasCard(data: data)),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // PARES Y TRÍOS
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: ParesCard(data: data)),
+
+                          const SizedBox(width: 5),
+
+                          Expanded(child: TriosCard(data: data)),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // ATRASADAS Y APUESTAS
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: AtrasadasCard(data: data)),
+
+                          const SizedBox(width: 5),
+
+                          Expanded(child: ApuestasCard(data: data)),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      RankingScoreCard(data: data),
+
+                      const SizedBox(height: 10),
+
+                      CoocurrenciaCard(data: data),
+
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-
-                const SizedBox(height: 10),
-
-                // CALIENTES Y FRIAS
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: CalientesCard(data: data)),
-
-                    const SizedBox(width: 5),
-
-                    Expanded(child: FriasCard(data: data)),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                // PARES Y TRIOS
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: ParesCard(data: data)),
-
-                    const SizedBox(width: 5),
-
-                    Expanded(child: TriosCard(data: data)),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                // ATRASADAS Y APUESTAS
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: AtrasadasCard(data: data)),
-
-                    const SizedBox(width: 5),
-
-                    Expanded(child: ApuestasCard(data: data)),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                RankingScoreCard(data: data),
-
-                const SizedBox(height: 10),
-
-                CoocurrenciaCard(data: data),
-              ],
-            ),
+              ),
+            ],
           );
         },
       ),

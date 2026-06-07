@@ -11,7 +11,11 @@ class PremiumCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ranking = data["ranking"];
 
-    final maxScore = ranking.first.score;
+    final rankingPremium = [...ranking];
+
+    rankingPremium.sort((a, b) => b.score.compareTo(a.score));
+
+    final maxScore = rankingPremium.first.score;
 
     return Card(
       elevation: 6,
@@ -29,7 +33,7 @@ class PremiumCard extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            ...ranking.take(10).toList().asMap().entries.map((entry) {
+            ...rankingPremium.take(10).toList().asMap().entries.map((entry) {
               final index = entry.key;
               final e = entry.value;
 
