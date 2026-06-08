@@ -26,15 +26,34 @@ import '../widgets/dashboard/coocurrencia_card.dart';
 
 import '../widgets/dashboard/top_relacional_card.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
   @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  DateTime? fechaSeleccionada;
+
+  List<int> bolillasSeleccionadas = [];
+
+  Future<Map<String, dynamic>>? futureAnalisis;
+
+  @override
+  void initState() {
+    super.initState();
+
+    futureAnalisis = DashboardService().generarAnalisis(DateTime.now());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print("BUILD DASHBOARD");
     return Scaffold(
       appBar: const AppNavbar(currentPage: "dashboard"),
       body: FutureBuilder<Map<String, dynamic>>(
-        future: DashboardService().generarAnalisis(),
+        future: futureAnalisis,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -51,11 +70,32 @@ class DashboardPage extends StatelessWidget {
           final data = snapshot.data!;
 
           return Column(
+            key: const ValueKey('dashboard_column'),
             children: [
               // ==========================================
               // SELECTOR FIJO ARRIBA
               // ==========================================
-              const SelectorFecha(),
+              SelectorFecha(
+                key: const ValueKey('selector_fecha'),
+                onFechaChanged: (fecha, bolillas) {
+                  print("FECHA RECIBIDA => $fecha");
+
+                  if (fechaSeleccionada == fecha &&
+                      bolillasSeleccionadas.toString() == bolillas.toString()) {
+                    return;
+                  }
+
+                  setState(() {
+                    print("SETSTATE DASHBOARD");
+
+                    fechaSeleccionada = fecha;
+
+                    bolillasSeleccionadas = bolillas;
+
+                    futureAnalisis = DashboardService().generarAnalisis(fecha);
+                  });
+                },
+              ),
 
               // ==========================================
               // CONTENIDO SCROLLEABLE

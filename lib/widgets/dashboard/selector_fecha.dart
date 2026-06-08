@@ -1,15 +1,24 @@
+//lib/widgets/dashboard/selector_fecha.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class SelectorFecha extends StatefulWidget {
-  const SelectorFecha({super.key});
+  final Function(DateTime fecha, List<int> bolillas)? onFechaChanged;
+
+  const SelectorFecha({super.key, this.onFechaChanged});
 
   @override
   State<SelectorFecha> createState() => _SelectorFechaState();
 }
 
 class _SelectorFechaState extends State<SelectorFecha> {
+  @override
+  void dispose() {
+    print("DISPOSE SELECTOR FECHA #$contadorInit");
+    super.dispose();
+  }
+
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
   DateTime? fechaActual;
@@ -21,8 +30,13 @@ class _SelectorFechaState extends State<SelectorFecha> {
   @override
   void initState() {
     super.initState();
+    contadorInit++;
+
+    print("INIT SELECTOR FECHA #$contadorInit");
     cargarUltimoRegistro();
   }
+
+  static int contadorInit = 0;
 
   Future<void> cargarUltimoRegistro() async {
     final snap = await db
@@ -37,6 +51,8 @@ class _SelectorFechaState extends State<SelectorFecha> {
 
     fechaActual = (doc['fecha'] as Timestamp).toDate();
 
+    print("ULTIMO REGISTRO => $fechaActual");
+
     bolillas = [
       doc['bolilla_uno'],
       doc['bolilla_dos'],
@@ -48,6 +64,10 @@ class _SelectorFechaState extends State<SelectorFecha> {
     setState(() {
       loading = false;
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onFechaChanged?.call(fechaActual!, bolillas);
+    });
   }
 
   Future<void> cargarPorFecha(DateTime fecha) async {
@@ -56,6 +76,7 @@ class _SelectorFechaState extends State<SelectorFecha> {
     });
 
     final inicio = DateTime(fecha.year, fecha.month, fecha.day);
+
     final fin = inicio.add(const Duration(days: 1));
 
     final snap = await db
@@ -65,23 +86,33 @@ class _SelectorFechaState extends State<SelectorFecha> {
         .limit(1)
         .get();
 
-    if (snap.docs.isNotEmpty) {
-      final doc = snap.docs.first;
+    if (snap.docs.isEmpty) {
+      setState(() {
+        loading = false;
+      });
 
-      fechaActual = (doc['fecha'] as Timestamp).toDate();
-
-      bolillas = [
-        doc['bolilla_uno'],
-        doc['bolilla_dos'],
-        doc['bolilla_tres'],
-        doc['bolilla_cuatro'],
-        doc['bolilla_cinco'],
-      ];
+      return;
     }
+
+    final doc = snap.docs.first;
+
+    fechaActual = (doc['fecha'] as Timestamp).toDate();
+
+    print("FECHA CARGADA => $fechaActual");
+
+    bolillas = [
+      doc['bolilla_uno'],
+      doc['bolilla_dos'],
+      doc['bolilla_tres'],
+      doc['bolilla_cuatro'],
+      doc['bolilla_cinco'],
+    ];
 
     setState(() {
       loading = false;
     });
+
+    widget.onFechaChanged?.call(fechaActual!, bolillas);
   }
 
   Future<void> seleccionarFecha() async {
@@ -109,6 +140,7 @@ class _SelectorFechaState extends State<SelectorFecha> {
 
   @override
   Widget build(BuildContext context) {
+    print("BUILD SELECTOR FECHA");
     if (loading) {
       return const SizedBox(
         height: 90,

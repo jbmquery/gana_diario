@@ -11,8 +11,61 @@ import '../models/coocurrencia_stats.dart';
 class DashboardService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<Map<String, dynamic>> generarAnalisis() async {
-    final snapshot = await _db.collection('registros').orderBy('sorte').get();
+  Future<Map<String, dynamic>> generarAnalisis(
+    DateTime fechaSeleccionada,
+  ) async {
+    print("GENERANDO ANALISIS");
+    //=====================================
+    // FECHA DE CORTE
+    //=====================================
+
+    final fechaCorte = DateTime(
+      fechaSeleccionada.year,
+      fechaSeleccionada.month,
+      fechaSeleccionada.day,
+    ).subtract(const Duration(days: 1));
+
+    //=====================================
+    // BOLILLAS DEL DÍA SELECCIONADO
+    //=====================================
+
+    final inicioSeleccionado = DateTime(
+      fechaSeleccionada.year,
+      fechaSeleccionada.month,
+      fechaSeleccionada.day,
+    );
+
+    final finSeleccionado = inicioSeleccionado.add(const Duration(days: 1));
+
+    final resultadoSeleccionado = await _db
+        .collection('registros')
+        .where(
+          'fecha',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(inicioSeleccionado),
+        )
+        .where('fecha', isLessThan: Timestamp.fromDate(finSeleccionado))
+        .limit(1)
+        .get();
+
+    List<int> bolillasResultado = [];
+
+    if (resultadoSeleccionado.docs.isNotEmpty) {
+      final doc = resultadoSeleccionado.docs.first;
+
+      bolillasResultado = [
+        doc['bolilla_uno'],
+        doc['bolilla_dos'],
+        doc['bolilla_tres'],
+        doc['bolilla_cuatro'],
+        doc['bolilla_cinco'],
+      ];
+    }
+
+    final snapshot = await _db
+        .collection('registros')
+        .where('fecha', isLessThanOrEqualTo: Timestamp.fromDate(fechaCorte))
+        .orderBy('fecha')
+        .get();
 
     final docs = snapshot.docs;
 
@@ -221,11 +274,22 @@ class DashboardService {
     return {
       "totalSorteos": total,
       "ultimoSorteo": ultimoSorteo,
+
       "ranking": rankingFinal,
+
       "topPares": topPares.take(20).toList(),
+
       "topTrios": topTrios.take(20).toList(),
+
       "topCoocurrencias": topCoocurrencias.take(50).toList(),
+
       "apuestas": generarApuestas(rankingFinal),
+
+      // NUEVO
+      "bolillasResultado": bolillasResultado,
+
+      // NUEVO
+      "fechaAnalizada": fechaSeleccionada,
     };
   }
 
