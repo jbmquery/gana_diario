@@ -1,4 +1,5 @@
 //lib/pages/dashboard_page.dart
+
 import 'package:flutter/material.dart';
 
 import '../services/dashboard_service.dart';
@@ -50,63 +51,63 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     print("BUILD DASHBOARD");
+
     return Scaffold(
       appBar: const AppNavbar(currentPage: "dashboard"),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: futureAnalisis,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
 
-          if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          }
+      body: Column(
+        children: [
+          //=========================================
+          // SELECTOR FIJO
+          //=========================================
+          SelectorFecha(
+            key: const ValueKey('selector_fecha'),
+            onFechaChanged: (fecha, bolillas) {
+              print("FECHA RECIBIDA => $fecha");
 
-          if (!snapshot.hasData) {
-            return const Center(child: Text("Sin datos"));
-          }
+              if (fechaSeleccionada == fecha &&
+                  bolillasSeleccionadas.toString() == bolillas.toString()) {
+                return;
+              }
 
-          final data = snapshot.data!;
+              setState(() {
+                print("SETSTATE DASHBOARD");
 
-          return Column(
-            key: const ValueKey('dashboard_column'),
-            children: [
-              // ==========================================
-              // SELECTOR FIJO ARRIBA
-              // ==========================================
-              SelectorFecha(
-                key: const ValueKey('selector_fecha'),
-                onFechaChanged: (fecha, bolillas) {
-                  print("FECHA RECIBIDA => $fecha");
+                fechaSeleccionada = fecha;
 
-                  if (fechaSeleccionada == fecha &&
-                      bolillasSeleccionadas.toString() == bolillas.toString()) {
-                    return;
-                  }
+                bolillasSeleccionadas = bolillas;
 
-                  setState(() {
-                    print("SETSTATE DASHBOARD");
+                futureAnalisis = DashboardService().generarAnalisis(fecha);
+              });
+            },
+          ),
 
-                    fechaSeleccionada = fecha;
+          //=========================================
+          // CONTENIDO DEL DASHBOARD
+          //=========================================
+          Expanded(
+            child: FutureBuilder<Map<String, dynamic>>(
+              future: futureAnalisis,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                    bolillasSeleccionadas = bolillas;
+                if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
+                }
 
-                    futureAnalisis = DashboardService().generarAnalisis(fecha);
-                  });
-                },
-              ),
+                if (!snapshot.hasData) {
+                  return const Center(child: Text("Sin datos"));
+                }
 
-              // ==========================================
-              // CONTENIDO SCROLLEABLE
-              // ==========================================
-              Expanded(
-                child: SingleChildScrollView(
+                final data = snapshot.data!;
+
+                return SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // RESUMEN
                       StatsCards(data: data),
 
                       const SizedBox(height: 10),
@@ -136,7 +137,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
                       const SizedBox(height: 10),
 
-                      // CALIENTES Y FRÍAS
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -150,7 +150,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
                       const SizedBox(height: 10),
 
-                      // PARES Y TRÍOS
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -164,7 +163,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
                       const SizedBox(height: 10),
 
-                      // ATRASADAS Y APUESTAS
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -187,11 +185,11 @@ class _DashboardPageState extends State<DashboardPage> {
                       const SizedBox(height: 20),
                     ],
                   ),
-                ),
-              ),
-            ],
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
