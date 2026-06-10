@@ -10,6 +10,7 @@ import '../widgets/registros/registro_dialog.dart';
 import '../widgets/registros/registros_toolbar.dart';
 import '../widgets/registros/registros_list.dart';
 import '../services/excel_service.dart';
+import 'package:open_filex/open_filex.dart';
 
 class RegistrosPage extends StatefulWidget {
   const RegistrosPage({super.key});
@@ -53,7 +54,13 @@ class _RegistrosPageState extends State<RegistrosPage> {
     final texto = sorteController.text.trim();
 
     if (texto.isNotEmpty) {
-      return RegistrosService.obtenerRegistroPorSorte(int.parse(texto));
+      final sorte = int.tryParse(texto);
+
+      if (sorte == null) {
+        return Future.value([]);
+      }
+
+      return RegistrosService.obtenerRegistroPorSorte(sorte);
     }
 
     if (fechaFiltro != null) {
@@ -92,6 +99,26 @@ class _RegistrosPageState extends State<RegistrosPage> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Plantilla guardada en:\n$path')));
+  }
+
+  Future<void> exportarTodosLosRegistros() async {
+    try {
+      final path = await ExcelService.exportarTodosLosRegistros();
+
+      await OpenFilex.open(path);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Excel generado correctamente')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 
   bool coincideFecha(RegistroModel registro) {
@@ -134,6 +161,7 @@ class _RegistrosPageState extends State<RegistrosPage> {
               fechaFiltro: fechaFiltro,
 
               onNuevoRegistro: abrirNuevoRegistro,
+              onExportarExcel: exportarTodosLosRegistros,
 
               onImportarExcel: importarExcel,
 

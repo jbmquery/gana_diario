@@ -5,6 +5,7 @@ class RegistrosToolbar extends StatelessWidget {
   final TextEditingController sorteController;
 
   final VoidCallback onNuevoRegistro;
+  final VoidCallback onExportarExcel;
   final VoidCallback onImportarExcel;
   final VoidCallback onDescargarPlantilla;
   final VoidCallback onSeleccionarFecha;
@@ -16,6 +17,7 @@ class RegistrosToolbar extends StatelessWidget {
     super.key,
     required this.sorteController,
     required this.onNuevoRegistro,
+    required this.onExportarExcel,
     required this.onImportarExcel,
     required this.onDescargarPlantilla,
     required this.onSeleccionarFecha,
@@ -97,10 +99,15 @@ class RegistrosToolbar extends StatelessWidget {
 
         const SizedBox(width: 8),
 
-        IconButton(
-          tooltip: "Nuevo Registro",
-          onPressed: onNuevoRegistro,
-          icon: const Icon(Icons.add_circle, size: 30),
+        Tooltip(
+          message: "Nuevo Registro\n(Mantener presionado para exportar Excel)",
+          child: GestureDetector(
+            onLongPress: onExportarExcel,
+            child: IconButton(
+              onPressed: onNuevoRegistro,
+              icon: const Icon(Icons.add_circle, size: 30),
+            ),
+          ),
         ),
       ],
     );
